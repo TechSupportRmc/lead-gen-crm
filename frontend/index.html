@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OmniLead AI - Worldwide Lead Gen & Cold Calling CRM</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              800: '#3730a3',
+              900: '#312e81'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
+            <i data-lucide="crosshair" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h1 class="text-lg font-bold text-slate-900 leading-tight">OmniLead AI <span class="text-xs px-2 py-0.5 rounded-full bg-brand-100 text-brand-700 font-semibold uppercase tracking-wider ml-1">CRM Pro</span></h1>
+            <p class="text-xs text-slate-500">Global Lead Generation & Cold Caller Feedback Engine</p>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="flex space-x-1 sm:space-x-2">
+          <button onclick="switchTab('generator')" id="tab-btn-generator" class="px-3.5 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center space-x-1.5 bg-brand-50 text-brand-700">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+            <span>Lead Generator</span>
+          </button>
+          <button onclick="switchTab('crm')" id="tab-btn-crm" class="px-3.5 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center space-x-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+            <i data-lucide="phone-call" class="w-4 h-4"></i>
+            <span>Calling Queue & CRM</span>
+            <span id="crm-badge-count" class="ml-1 px-1.5 py-0.2 rounded-full bg-slate-200 text-xs font-bold">0</span>
+          </button>
+          <button onclick="switchTab('analytics')" id="tab-btn-analytics" class="px-3.5 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center space-x-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+            <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+            <span>Analytics</span>
+          </button>
+        </nav>
+
+        <!-- Quick Action & Export -->
+        <div class="flex items-center space-x-2">
+          <button onclick="purgeAllLeads()" title="Clear all leads to start completely fresh" class="px-3 py-2 text-xs font-semibold text-rose-700 bg-rose-50 border border-rose-200 rounded-lg hover:bg-rose-100 flex items-center space-x-1.5 shadow-sm transition">
+            <i data-lucide="trash-2" class="w-4 h-4 text-rose-500"></i>
+            <span>Purge Old Leads</span>
+          </button>
+          <button onclick="exportCSV()" class="px-3 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 flex items-center space-x-1.5 shadow-sm">
+            <i data-lucide="download" class="w-4 h-4 text-slate-500"></i>
+            <span>Export CSV</span>
+          </button>
+          <button onclick="openManualLeadModal()" class="px-3 py-2 text-xs font-semibold text-white bg-slate-900 rounded-lg hover:bg-slate-800 flex items-center space-x-1.5 shadow-sm">
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span>Add Lead</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Key Metrics Strip -->
+  <section class="bg-white border-b border-slate-200 py-3.5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+          <span class="text-xs text-slate-500 font-medium">Total Leads</span>
+          <p id="stat-total" class="text-xl font-bold text-slate-800 mt-0.5">0</p>
+        </div>
+        <div class="bg-blue-50 border border-blue-200/60 rounded-xl p-3">
+          <span class="text-xs text-blue-700 font-medium">New / Uncalled</span>
+          <p id="stat-new" class="text-xl font-bold text-blue-900 mt-0.5">0</p>
+        </div>
+        <div class="bg-emerald-50 border border-emerald-200/60 rounded-xl p-3">
+          <span class="text-xs text-emerald-700 font-medium">Interested</span>
+          <p id="stat-interested" class="text-xl font-bold text-emerald-900 mt-0.5">0</p>
+        </div>
+        <div class="bg-amber-50 border border-amber-200/60 rounded-xl p-3">
+          <span class="text-xs text-amber-700 font-medium">Follow-ups</span>
+          <p id="stat-followup" class="text-xl font-bold text-amber-900 mt-0.5">0</p>
+        </div>
+        <div class="bg-purple-50 border border-purple-200/60 rounded-xl p-3">
+          <span class="text-xs text-purple-700 font-medium">Converted / Won</span>
+          <p id="stat-converted" class="text-xl font-bold text-purple-900 mt-0.5">0</p>
+        </div>
+        <div class="bg-rose-50 border border-rose-200/60 rounded-xl p-3">
+          <span class="text-xs text-rose-700 font-medium">No Website (Prime)</span>
+          <p id="stat-noweb" class="text-xl font-bold text-rose-900 mt-0.5">0</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Area -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ============================================== -->
+    <!-- TAB 1: LEAD GENERATOR (Cascading Hierarchy)   -->
+    <!-- ============================================== -->
+    <div id="tab-generator" class="block space-y-6">
+      <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 sm:p-8">
+        <div class="max-w-3xl">
+          <span class="text-xs uppercase tracking-wider font-bold text-brand-600 bg-brand-50 px-2.5 py-1 rounded-md">Automated Sourcing</span>
+          <h2 class="text-2xl font-extrabold text-slate-900 mt-2">Targeted Worldwide Lead Generator</h2>
+          <p class="text-sm text-slate-500 mt-1">Select your service, choose geographic location (Country &rarr; State &rarr; City like Jalgaon), and let the automated engine find high-potential businesses with phone numbers.</p>
+        </div>
+
+        <form id="lead-gen-form" onsubmit="handleGenerateLeads(event)" class="mt-8 space-y-6">
+          
+          <!-- STEP 1: SERVICE SELECTION -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Step 1: Choose Target Software / Web Service</label>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <!-- Website Dev -->
+              <label class="relative border-2 rounded-xl p-4 cursor-pointer transition-all flex flex-col justify-between hover:border-brand-500 border-slate-200 bg-white has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50/40 shadow-sm">
+                <input type="radio" name="service" value="Website Development" checked onchange="updateServiceIndustries()" class="sr-only">
+                <div>
+                  <div class="w-9 h-9 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center mb-3">
+                    <i data-lucide="globe" class="w-5 h-5"></i>
+                  </div>
+                  <h3 class="font-bold text-slate-900 text-sm">Website Development</h3>
+                  <p class="text-xs text-slate-500 mt-1">Targets businesses with no website or outdated web presence needing online booking, e-commerce, and SEO.</p>
+                </div>
+                <span class="mt-3 text-[11px] font-semibold text-brand-700 flex items-center">
+                  <i data-lucide="check-circle-2" class="w-3.5 h-3.5 mr-1"></i> High Calling Conversion
+                </span>
+              </label>
+
+              <!-- ERP Software -->
+              <label class="relative border-2 rounded-xl p-4 cursor-pointer transition-all flex flex-col justify-between hover:border-brand-500 border-slate-200 bg-white has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50/40 shadow-sm">
+                <input type="radio" name="service" value="ERP Software" onchange="updateServiceIndustries()" class="sr-only">
+                <div>
+                  <div class="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center mb-3">
+                    <i data-lucide="layers" class="w-5 h-5"></i>
+                  </div>
+                  <h3 class="font-bold text-slate-900 text-sm">ERP Software</h3>
+                  <p class="text-xs text-slate-500 mt-1">Targets manufacturing units (MIDC), wholesale traders, distribution hubs, PVC/agro mills needing stock & billing ERP.</p>
+                </div>
+                <span class="mt-3 text-[11px] font-semibold text-emerald-700 flex items-center">
+                  <i data-lucide="check-circle-2" class="w-3.5 h-3.5 mr-1"></i> High Ticket Contracts
+                </span>
+              </label>
+
+              <!-- Custom Software -->
+              <label class="relative border-2 rounded-xl p-4 cursor-pointer transition-all flex flex-col justify-between hover:border-brand-500 border-slate-200 bg-white has-[:checked]:border-brand-600 has-[:checked]:bg-brand-50/40 shadow-sm">
+                <input type="radio" name="service" value="Custom Software Development" onchange="updateServiceIndustries()" class="sr-only">
+                <div>
+                  <div class="w-9 h-9 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center mb-3">
+                    <i data-lucide="code" class="w-5 h-5"></i>
+                  </div>
+                  <h3 class="font-bold text-slate-900 text-sm">Custom Software Development</h3>
+                  <p class="text-xs text-slate-500 mt-1">Targets clinics/hospitals, academies, transport logistics, co-op credit societies needing bespoke automation & WhatsApp apps.</p>
+                </div>
+                <span class="mt-3 text-[11px] font-semibold text-amber-700 flex items-center">
+                  <i data-lucide="check-circle-2" class="w-3.5 h-3.5 mr-1"></i> Recurring Monthly Retainers
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <!-- STEP 2: CASCADING LOCATION HIERARCHY -->
+          <div class="bg-slate-50/70 p-5 rounded-xl border border-slate-200">
+            <div class="flex items-center justify-between mb-3">
+              <label class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center">
+                <i data-lucide="map-pin" class="w-4 h-4 text-brand-600 mr-1.5"></i>
+                Step 2: Cascading Geographic Location (Country &rarr; State &rarr; City)
+              </label>
+              <span class="text-xs text-slate-500 italic">Dependent selection active</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- Country Selection -->
+              <div>
+                <label for="select-country" class="block text-xs font-semibold text-slate-700 mb-1">1. Select Country</label>
+                <select id="select-country" onchange="onCountryChanged()" class="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:border-brand-500 shadow-sm">
+                  <!-- Populated by JS -->
+                </select>
+              </div>
+
+              <!-- State Selection -->
+              <div>
+                <label for="select-state" class="block text-xs font-semibold text-slate-700 mb-1">2. Select State / Province</label>
+                <select id="select-state" onchange="onStateChanged()" class="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:border-brand-500 shadow-sm">
+                  <!-- Populated dynamically -->
+                </select>
+              </div>
+
+              <!-- City Selection -->
+              <div>
+                <div class="flex items-center justify-between mb-1">
+                  <label for="select-city" class="text-xs font-semibold text-slate-700">3. Select City / District</label>
+                  <button type="button" onclick="toggleCustomCity()" class="text-[11px] font-bold text-brand-600 hover:underline" id="toggle-custom-btn">+ Custom City</button>
+                </div>
+                <div id="city-dropdown-wrapper">
+                  <select id="select-city" class="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:border-brand-500 shadow-sm">
+                    <!-- Populated dynamically (Includes Jalgaon, Mumbai, etc.) -->
+                  </select>
+                </div>
+                <div id="city-custom-wrapper" class="hidden">
+                  <input type="text" id="input-custom-city" placeholder="Type any city (e.g. Jalgaon, Bhusawal, etc.)" class="w-full bg-white border border-brand-400 rounded-lg px-3.5 py-2.5 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:border-brand-500 shadow-sm">
+                </div>
+              </div>
+            </div>
+
+            <!-- Jalgaon / Quick Presets Pills -->
+            <div class="mt-4 pt-3 border-t border-slate-200/80 flex flex-wrap items-center gap-2">
+              <span class="text-xs text-slate-500 font-medium">Quick Location Shortcuts:</span>
+              <button type="button" onclick="quickSetLocation('India', 'Maharashtra', 'Jalgaon')" class="px-2.5 py-1 text-xs font-bold rounded-md bg-white border border-brand-300 text-brand-700 hover:bg-brand-50 shadow-sm transition">
+                📍 Jalgaon, Maharashtra (India)
+              </button>
+              <button type="button" onclick="quickSetLocation('India', 'Maharashtra', 'Mumbai')" class="px-2.5 py-1 text-xs font-medium rounded-md bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 transition">
+                Mumbai, MH
+              </button>
+              <button type="button" onclick="quickSetLocation('India', 'Maharashtra', 'Pune')" class="px-2.5 py-1 text-xs font-medium rounded-md bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 transition">
+                Pune, MH
+              </button>
+              <button type="button" onclick="quickSetLocation('United States', 'California', 'Los Angeles')" class="px-2.5 py-1 text-xs font-medium rounded-md bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 transition">
+                Los Angeles, CA (USA)
+              </button>
+              <button type="button" onclick="quickSetLocation('United Arab Emirates', 'Dubai', 'Dubai City')" class="px-2.5 py-1 text-xs font-medium rounded-md bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 transition">
+                Dubai (UAE)
+              </button>
+            </div>
+          </div>
+
+          <!-- STEP 3 & 4: INDUSTRY NICHE & LEAD QUANTITY -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="select-niche" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Step 3: Industry / Business Niche</label>
+              <select id="select-niche" class="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:border-brand-500 shadow-sm">
+                <!-- Dynamically populated based on service -->
+              </select>
+            </div>
+
+            <div>
+              <label for="select-count" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">Step 4: Leads to Generate</label>
+              <select id="select-count" class="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm font-medium focus:ring-2 focus:ring-brand-500 focus:border-brand-500 shadow-sm">
+                <option value="12">12 Highly Targeted Leads</option>
+                <option value="20" selected>20 Highly Targeted Leads</option>
+                <option value="35">35 Highly Targeted Leads</option>
+                <option value="50">50 Leads (Maximum Batch)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- OPTIONAL: GOOGLE PLACES API KEY ENRICHMENT -->
+          <div class="bg-indigo-50/50 border border-indigo-100 rounded-xl p-4">
+            <div class="flex items-center justify-between mb-1.5">
+              <label for="input-google-key" class="text-xs font-bold text-slate-800 flex items-center">
+                <i data-lucide="key" class="w-4 h-4 text-brand-600 mr-1.5"></i>
+                Optional: Direct Google Places API Key
+              </label>
+              <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-100/70 px-2 py-0.5 rounded">Verified Enterprise Registry + OSM Enabled</span>
+            </div>
+            <p class="text-[11px] text-slate-500 mb-2">Leave blank to use our built-in regional business registry & live OpenStreetMap POIs. Or paste your Google Places API Key for direct live Google Maps search results.</p>
+            <input type="password" id="input-google-key" placeholder="AIzaSy... (Paste Google API Key here if available)" class="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2 text-xs font-mono focus:ring-2 focus:ring-brand-500">
+          </div>
+
+          <!-- Action Button -->
+          <div class="pt-2">
+            <button type="submit" id="btn-generate" class="w-full sm:w-auto px-8 py-3.5 text-sm font-bold text-white bg-gradient-to-r from-brand-600 to-indigo-600 rounded-xl hover:from-brand-700 hover:to-indigo-700 shadow-lg shadow-brand-500/25 flex items-center justify-center space-x-2 transition-all">
+              <i data-lucide="search" class="w-5 h-5"></i>
+              <span>Generate & Siphon Leads Now</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Live Generated Notification Banner -->
+      <div id="gen-result-alert" class="hidden bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-start space-x-3">
+        <i data-lucide="check-circle" class="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5"></i>
+        <div class="flex-1">
+          <h4 class="text-sm font-bold text-emerald-900" id="gen-result-title">Leads Generated Successfully!</h4>
+          <p class="text-xs text-emerald-700 mt-0.5" id="gen-result-desc">20 leads in Jalgaon have been added to your Cold Calling CRM queue.</p>
+        </div>
+        <button onclick="switchTab('crm')" class="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition">View Calling Queue &rarr;</button>
+      </div>
+    </div>
+
+
+    <!-- ============================================== -->
+    <!-- TAB 2: COLD CALLER CRM & CALLING QUEUE         -->
+    <!-- ============================================== -->
+    <div id="tab-crm" class="hidden space-y-6">
+      
+      <!-- Filter Bar -->
+      <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+        <div class="flex flex-wrap gap-2 items-center flex-1">
+          <!-- Search box -->
+          <div class="relative min-w-[200px] flex-1">
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+            <input type="text" id="crm-search" oninput="loadLeads()" placeholder="Search business, phone, or notes..." class="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 pr-3 py-1.5 text-xs font-medium focus:ring-2 focus:ring-brand-500 focus:bg-white">
+          </div>
+
+          <!-- Service Filter -->
+          <select id="crm-filter-service" onchange="loadLeads()" class="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-medium focus:bg-white">
+            <option value="All Services">All Services</option>
+            <option value="Website Development">Website Development</option>
+            <option value="ERP Software">ERP Software</option>
+            <option value="Custom Software Development">Custom Software</option>
+          </select>
+
+          <!-- Status Filter -->
+          <select id="crm-filter-status" onchange="loadLeads()" class="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-medium focus:bg-white">
+            <option value="All Statuses">All Call Statuses</option>
+            <option value="New Lead">New Lead</option>
+            <option value="Interested">Interested / Hot</option>
+            <option value="Follow-up Scheduled">Follow-up Scheduled</option>
+            <option value="Busy / Callback">Busy / Callback</option>
+            <option value="Attempted">Attempted / No Answer</option>
+            <option value="Not Interested">Not Interested</option>
+            <option value="Converted">Converted / Won</option>
+          </select>
+
+          <!-- City Filter -->
+          <select id="crm-filter-city" onchange="loadLeads()" class="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-medium focus:bg-white">
+            <option value="All Cities">All Cities</option>
+            <option value="Jalgaon">Jalgaon</option>
+          </select>
+        </div>
+
+        <div class="flex items-center space-x-2 text-xs text-slate-500">
+          <span id="crm-lead-count-label">0 leads matching</span>
+        </div>
+      </div>
+
+      <!-- Leads Grid / List -->
+      <div id="leads-container" class="space-y-3">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+
+
+    <!-- ============================================== -->
+    <!-- TAB 3: PERFORMANCE ANALYTICS                   -->
+    <!-- ============================================== -->
+    <div id="tab-analytics" class="hidden space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- By Service Card -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+          <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center">
+            <i data-lucide="pie-chart" class="w-5 h-5 text-brand-600 mr-2"></i>
+            Leads Distribution by Service
+          </h3>
+          <div class="space-y-3" id="analytics-services-list">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- By Status Card -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+          <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center">
+            <i data-lucide="funnel" class="w-5 h-5 text-indigo-600 mr-2"></i>
+            Cold Calling Conversion Funnel
+          </h3>
+          <div class="space-y-3" id="analytics-funnel-list">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ============================================== -->
+  <!-- MODAL: LOG CALL FEEDBACK                      -->
+  <!-- ============================================== -->
+  <div id="modal-feedback" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden transform transition-all">
+      <div class="bg-gradient-to-r from-slate-900 to-indigo-950 px-6 py-4 text-white flex items-center justify-between">
+        <div>
+          <span class="text-[11px] uppercase tracking-wider text-indigo-300 font-semibold">Cold Caller Disposition</span>
+          <h3 class="text-base font-bold text-white mt-0.5" id="modal-lead-name">Business Name</h3>
+        </div>
+        <button onclick="closeFeedbackModal()" class="text-slate-400 hover:text-white transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-4">
+        <!-- Contact summary -->
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between text-xs">
+          <div>
+            <span class="text-slate-500 font-medium">Phone:</span>
+            <span id="modal-lead-phone" class="font-bold text-slate-900 ml-1"></span>
+          </div>
+          <div>
+            <span class="text-slate-500 font-medium">Service:</span>
+            <span id="modal-lead-service" class="font-bold text-brand-700 ml-1"></span>
+          </div>
+        </div>
+
+        <!-- Script Pitch reminder -->
+        <div class="p-3 bg-amber-50/70 border border-amber-200 rounded-xl text-xs text-amber-900">
+          <strong class="font-bold">Pitch Hook:</strong>
+          <span id="modal-lead-pitch" class="ml-1"></span>
+        </div>
+
+        <form id="feedback-form" onsubmit="submitCallFeedback(event)" class="space-y-4">
+          <input type="hidden" id="modal-lead-id">
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label for="fb-caller-name" class="block text-xs font-semibold text-slate-700 mb-1">Caller / Agent Name</label>
+              <input type="text" id="fb-caller-name" required placeholder="e.g. Rahul / Priya" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-medium focus:ring-2 focus:ring-brand-500">
+            </div>
+
+            <div>
+              <label for="fb-status" class="block text-xs font-semibold text-slate-700 mb-1">Call Disposition / Status</label>
+              <select id="fb-status" required class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-brand-500">
+                <option value="Interested">🔥 Interested (Meeting/Quote Requested)</option>
+                <option value="Follow-up Scheduled">⏰ Follow-up Scheduled</option>
+                <option value="Busy / Callback">📞 Busy / Requested Callback</option>
+                <option value="Attempted">📴 Attempted / No Answer</option>
+                <option value="Not Interested">❌ Not Interested</option>
+                <option value="Wrong Number">⚠️ Wrong / Disconnected Number</option>
+                <option value="Converted">🎉 Converted / Deal Closed</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label for="fb-follow-up" class="block text-xs font-semibold text-slate-700 mb-1">Next Follow-Up Date & Time (Optional)</label>
+            <input type="datetime-local" id="fb-follow-up" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-medium focus:ring-2 focus:ring-brand-500">
+          </div>
+
+          <div>
+            <label for="fb-notes" class="block text-xs font-semibold text-slate-700 mb-1">Client Feedback & Conversation Notes</label>
+            <textarea id="fb-notes" rows="3" required placeholder="e.g. Spoke to Director Mr. Patil. Currently using manual Excel for stock. Interested in demonstration on Tuesday 3 PM..." class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-medium focus:ring-2 focus:ring-brand-500"></textarea>
+          </div>
+
+          <!-- Call Logs History in Modal -->
+          <div id="modal-logs-section" class="border-t border-slate-200 pt-3">
+            <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Previous Call History</h4>
+            <div id="modal-logs-list" class="space-y-1.5 max-h-28 overflow-y-auto text-xs text-slate-600">
+              <p class="text-slate-400 italic">No previous calls logged yet.</p>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-end space-x-2 pt-2">
+            <button type="button" onclick="closeFeedbackModal()" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+            <button type="submit" class="px-5 py-2 text-xs font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-lg shadow-sm">Save Feedback</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============================================== -->
+  <!-- MODAL: MANUAL LEAD CREATION                    -->
+  <!-- ============================================== -->
+  <div id="modal-manual" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden">
+      <div class="bg-slate-900 px-6 py-4 text-white flex items-center justify-between">
+        <h3 class="text-sm font-bold text-white">Add Single Lead Manually</h3>
+        <button onclick="closeManualLeadModal()" class="text-slate-400 hover:text-white">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <form onsubmit="submitManualLead(event)" class="p-6 space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Business Name *</label>
+          <input type="text" id="manual-name" required placeholder="e.g. Apex Polymer Pipes" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Phone Number *</label>
+            <input type="text" id="manual-phone" required placeholder="e.g. +91 9822012345" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Target Service *</label>
+            <select id="manual-service" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs">
+              <option value="Website Development">Website Development</option>
+              <option value="ERP Software" selected>ERP Software</option>
+              <option value="Custom Software Development">Custom Software</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">City *</label>
+            <input type="text" id="manual-city" value="Jalgaon" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">State *</label>
+            <input type="text" id="manual-state" value="Maharashtra" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Country *</label>
+            <input type="text" id="manual-country" value="India" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Website URL (Leave blank if none)</label>
+          <input type="text" id="manual-website" placeholder="https://example.com" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Pitch Hook</label>
+          <input type="text" id="manual-pitch" placeholder="Key selling point for cold caller" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs">
+        </div>
+        <div class="flex justify-end space-x-2 pt-3 border-t">
+          <button type="button" onclick="closeManualLeadModal()" class="px-3 py-1.5 text-xs text-slate-600">Cancel</button>
+          <button type="submit" class="px-4 py-1.5 text-xs font-bold text-white bg-slate-900 rounded-lg">Save Lead</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- JavaScript Application Logic -->
+  <script>
+    let locationsData = {};
+    let serviceCatalog = {};
+    let currentLeads = [];
+
+    // Initialize
+    document.addEventListener("DOMContentLoaded", async () => {
+      lucide.createIcons();
+      await fetchLocations();
+      await fetchServices();
+      await loadStats();
+      await loadLeads();
+      updateCityFilterList();
+    });
+
+    // API calls
+    async function fetchLocations() {
+      try {
+        const res = await fetch('/api/locations');
+        locationsData = await res.json();
+        populateCountries();
+      } catch (err) {
+        console.error("Failed to load locations", err);
+      }
+    }
+
+    async function fetchServices() {
+      try {
+        const res = await fetch('/api/services');
+        serviceCatalog = await res.json();
+        updateServiceIndustries();
+      } catch (err) {
+        console.error("Failed to load services", err);
+      }
+    }
+
+    function populateCountries() {
+      const countrySelect = document.getElementById('select-country');
+      countrySelect.innerHTML = '';
+      const countries = Object.keys(locationsData).sort();
+      
+      countries.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.textContent = c;
+        if (c === "India") opt.selected = true; // Default India
+        countrySelect.appendChild(opt);
+      });
+
+      onCountryChanged();
+    }
+
+    function onCountryChanged() {
+      const country = document.getElementById('select-country').value;
+      const stateSelect = document.getElementById('select-state');
+      stateSelect.innerHTML = '';
+
+      const states = Object.keys(locationsData[country] || {}).sort();
+      states.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s;
+        opt.textContent = s;
+        if (s === "Maharashtra") opt.selected = true; // Default Maharashtra for India
+        stateSelect.appendChild(opt);
+      });
+
+      onStateChanged();
+    }
+
+    function onStateChanged() {
+      const country = document.getElementById('select-country').value;
+      const state = document.getElementById('select-state').value;
+      const citySelect = document.getElementById('select-city');
+      citySelect.innerHTML = '';
+
+      const cities = locationsData[country]?.[state] || [];
+      cities.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.textContent = c;
+        if (c.toLowerCase() === "jalgaon") opt.selected = true; // User specifically highlighted Jalgaon!
+        citySelect.appendChild(opt);
+      });
+    }
+
+    function toggleCustomCity() {
+      const dropdownWrap = document.getElementById('city-dropdown-wrapper');
+      const customWrap = document.getElementById('city-custom-wrapper');
+      const toggleBtn = document.getElementById('toggle-custom-btn');
+
+      if (customWrap.classList.contains('hidden')) {
+        customWrap.classList.remove('hidden');
+        dropdownWrap.classList.add('hidden');
+        toggleBtn.textContent = '← Pick from list';
+      } else {
+        customWrap.classList.add('hidden');
+        dropdownWrap.classList.remove('hidden');
+        toggleBtn.textContent = '+ Custom City';
+      }
+    }
+
+    function quickSetLocation(country, state, city) {
+      document.getElementById('select-country').value = country;
+      onCountryChanged();
+      document.getElementById('select-state').value = state;
+      onStateChanged();
+      document.getElementById('select-city').value = city;
+
+      // Ensure dropdown mode is visible
+      document.getElementById('city-custom-wrapper').classList.add('hidden');
+      document.getElementById('city-dropdown-wrapper').classList.remove('hidden');
+      document.getElementById('toggle-custom-btn').textContent = '+ Custom City';
+    }
+
+    function updateServiceIndustries() {
+      const selectedService = document.querySelector('input[name="service"]:checked').value;
+      const nicheSelect = document.getElementById('select-niche');
+      nicheSelect.innerHTML = '<option value="All Industries">All Industries & Businesses</option>';
+
+      const info = serviceCatalog[selectedService];
+      if (info && info.target_industries) {
+        info.target_industries.forEach(ind => {
+          const opt = document.createElement('option');
+          opt.value = ind;
+          opt.textContent = ind;
+          nicheSelect.appendChild(opt);
+        });
+      }
+    }
+
+    // Lead Generation Submit
+    async function handleGenerateLeads(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-generate');
+      const origHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i><span>Siphoning Leads & Verifying Numbers...</span>`;
+      lucide.createIcons();
+
+      const service = document.querySelector('input[name="service"]:checked').value;
+      const country = document.getElementById('select-country').value;
+      const state = document.getElementById('select-state').value;
+      
+      const isCustomCity = !document.getElementById('city-custom-wrapper').classList.contains('hidden');
+      const city = isCustomCity 
+        ? document.getElementById('input-custom-city').value.trim() 
+        : document.getElementById('select-city').value;
+
+      const niche = document.getElementById('select-niche').value;
+      const count = parseInt(document.getElementById('select-count').value, 10);
+      const google_api_key = document.getElementById('input-google-key')?.value.trim() || null;
+
+      try {
+        const resp = await fetch('/api/leads/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            country,
+            state,
+            city,
+            service,
+            industry_niche: niche,
+            count,
+            google_api_key
+          })
+        });
+
+        const data = await resp.json();
+        if (resp.ok) {
+          const alertBox = document.getElementById('gen-result-alert');
+          document.getElementById('gen-result-title').textContent = `Success: ${data.added_to_database} Verified Leads Added!`;
+          document.getElementById('gen-result-desc').textContent = `${data.generated_count} authentic businesses in ${city}, ${state} ready for your cold callers.`;
+          alertBox.classList.remove('hidden');
+
+          await loadStats();
+          await loadLeads();
+          updateCityFilterList();
+        } else {
+          alert('Error: ' + (data.detail || 'Failed to generate leads'));
+        }
+      } catch (err) {
+        alert('Connection error while generating leads: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = origHtml;
+        lucide.createIcons();
+      }
+    }
+
+    async function purgeAllLeads() {
+      if (!confirm("Are you sure you want to clear all previous sample leads and start fresh with verified authentic leads?")) {
+        return;
+      }
+      try {
+        const res = await fetch('/api/leads/purge-all', { method: 'POST' });
+        if (res.ok) {
+          await loadStats();
+          await loadLeads();
+          updateCityFilterList();
+          alert("Previous leads purged successfully! Now click 'Generate & Siphon Leads' to pull real verified leads.");
+        }
+      } catch (err) {
+        alert("Failed to purge leads: " + err.message);
+      }
+    }
+
+    // Load Leads with filters
+    async function loadLeads() {
+      const search = document.getElementById('crm-search').value;
+      const service = document.getElementById('crm-filter-service').value;
+      const status = document.getElementById('crm-filter-status').value;
+      const city = document.getElementById('crm-filter-city').value;
+
+      let url = `/api/leads?`;
+      if (search) url += `search=${encodeURIComponent(search)}&`;
+      if (service && service !== 'All Services') url += `service=${encodeURIComponent(service)}&`;
+      if (status && status !== 'All Statuses') url += `status=${encodeURIComponent(status)}&`;
+      if (city && city !== 'All Cities') url += `city=${encodeURIComponent(city)}&`;
+
+      try {
+        const resp = await fetch(url);
+        currentLeads = await resp.json();
+        renderLeads(currentLeads);
+      } catch (err) {
+        console.error('Failed to load leads', err);
+      }
+    }
+
+    function renderLeads(leads) {
+      const container = document.getElementById('leads-container');
+      const countLabel = document.getElementById('crm-lead-count-label');
+      const badgeCount = document.getElementById('crm-badge-count');
+
+      countLabel.textContent = `${leads.length} leads matching`;
+      badgeCount.textContent = leads.length;
+
+      if (!leads.length) {
+        container.innerHTML = `
+          <div class="bg-white border border-slate-200 rounded-2xl p-12 text-center">
+            <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto text-slate-400 mb-3">
+              <i data-lucide="inbox" class="w-6 h-6"></i>
+            </div>
+            <h3 class="text-sm font-bold text-slate-800">No leads found in this queue</h3>
+            <p class="text-xs text-slate-500 mt-1">Use the "Lead Generator" tab to discover businesses in Jalgaon or anywhere worldwide.</p>
+            <button onclick="switchTab('generator')" class="mt-4 px-4 py-2 bg-brand-600 text-white text-xs font-bold rounded-lg hover:bg-brand-700">Generate Leads Now</button>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      container.innerHTML = leads.map(l => {
+        // Status color styles
+        let statusBadge = '';
+        if (l.call_status === 'Interested') {
+          statusBadge = '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">🔥 Interested</span>';
+        } else if (l.call_status === 'Follow-up Scheduled') {
+          statusBadge = '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-amber-100 text-amber-800 border border-amber-300">⏰ Follow-up</span>';
+        } else if (l.call_status === 'Busy / Callback') {
+          statusBadge = '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-blue-100 text-blue-800 border border-blue-300">📞 Callback</span>';
+        } else if (l.call_status === 'Converted') {
+          statusBadge = '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-purple-100 text-purple-800 border border-purple-300">🎉 Converted</span>';
+        } else if (l.call_status === 'Not Interested') {
+          statusBadge = '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-slate-100 text-slate-600 border border-slate-200">❌ Not Interested</span>';
+        } else {
+          statusBadge = '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">⚡ New Lead</span>';
+        }
+
+        // WhatsApp direct link generator
+        const rawPhone = (l.phone || '').replace(/[^0-9]/g, '');
+        const waMsg = encodeURIComponent(`Hello, I saw ${l.name} online in ${l.city}. We specialize in ${l.service_needed} and wanted to share how we can help optimize your operations. Would you have 5 minutes for a quick chat?`);
+        const waLink = rawPhone ? `https://wa.me/${rawPhone}?text=${waMsg}` : '#';
+
+        // Website badge
+        const webBadge = l.has_website && l.website
+          ? `<a href="${l.website}" target="_blank" class="inline-flex items-center text-xs text-blue-600 hover:underline"><i data-lucide="globe" class="w-3.5 h-3.5 mr-1"></i> Visit Website</a>`
+          : `<span class="inline-flex items-center text-xs font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200"><i data-lucide="alert-triangle" class="w-3.5 h-3.5 mr-1"></i> No Website Found (Prime Pitch)</span>`;
+
+        return `
+          <div class="bg-white border border-slate-200 rounded-xl p-4 sm:p-5 shadow-sm hover:shadow-md transition">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+              
+              <!-- Business Info -->
+              <div class="space-y-1.5 flex-1">
+                <div class="flex flex-wrap items-center gap-2">
+                  <h3 class="text-base font-extrabold text-slate-900">${l.name}</h3>
+                  <span class="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 text-slate-700">${l.category || 'General'}</span>
+                  <span class="px-2 py-0.5 rounded text-[11px] font-bold bg-brand-50 text-brand-700 border border-brand-200">${l.service_needed}</span>
+                  ${statusBadge}
+                </div>
+
+                <div class="flex flex-wrap items-center text-xs text-slate-500 gap-y-1 gap-x-4">
+                  <span class="flex items-center"><i data-lucide="map-pin" class="w-3.5 h-3.5 mr-1 text-slate-400"></i> ${l.address || `${l.city}, ${l.state}`}</span>
+                  <span class="flex items-center"><i data-lucide="star" class="w-3.5 h-3.5 mr-1 text-amber-500 fill-amber-500"></i> ${l.rating || '4.5'} (${l.reviews_count || '25'} reviews)</span>
+                  ${webBadge}
+                </div>
+
+                <!-- Pitch Hook for Cold Caller -->
+                <div class="mt-2 text-xs bg-slate-50 border border-slate-200/90 rounded-lg p-2.5 text-slate-700">
+                  <span class="font-bold text-indigo-900">Cold Call Angle:</span> 
+                  <span class="text-slate-600 ml-1">${l.pitch_hook || 'Offer tailored solution for their specific niche.'}</span>
+                </div>
+
+                ${l.last_feedback ? `
+                  <div class="mt-1 text-xs bg-emerald-50/70 border border-emerald-200 rounded-lg p-2 text-emerald-900">
+                    <span class="font-bold">Caller Note (${l.caller_name || 'Agent'}):</span> ${l.last_feedback}
+                    ${l.next_follow_up ? `<span class="ml-2 font-bold text-amber-700">| Next Call: ${new Date(l.next_follow_up).toLocaleString()}</span>` : ''}
+                  </div>
+                ` : ''}
+              </div>
+
+              <!-- Cold Caller Action Box -->
+              <div class="flex flex-wrap lg:flex-col items-center lg:items-end justify-between gap-2 border-t lg:border-t-0 pt-3 lg:pt-0 border-slate-100">
+                <div class="text-sm font-bold text-slate-900 flex items-center">
+                  <i data-lucide="phone" class="w-4 h-4 mr-1 text-slate-500"></i>
+                  ${l.phone || 'No Phone'}
+                </div>
+
+                <div class="flex items-center space-x-1.5">
+                  <!-- Dial Button -->
+                  <a href="tel:${l.phone}" class="px-3 py-1.5 text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 rounded-lg flex items-center shadow-sm">
+                    <i data-lucide="phone-outgoing" class="w-3.5 h-3.5 mr-1.5"></i> Call
+                  </a>
+
+                  <!-- WhatsApp Button -->
+                  <a href="${waLink}" target="_blank" class="px-3 py-1.5 text-xs font-bold text-emerald-700 bg-emerald-100 hover:bg-emerald-200 rounded-lg flex items-center border border-emerald-300">
+                    <i data-lucide="message-square" class="w-3.5 h-3.5 mr-1.5"></i> WhatsApp
+                  </a>
+
+                  <!-- Feedback Button -->
+                  <button onclick="openFeedbackModal(${l.id})" class="px-3 py-1.5 text-xs font-bold text-brand-700 bg-brand-50 hover:bg-brand-100 rounded-lg border border-brand-200 flex items-center">
+                    <i data-lucide="edit-3" class="w-3.5 h-3.5 mr-1.5"></i> Feedback
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    // Modal Operations
+    async function openFeedbackModal(leadId) {
+      try {
+        const res = await fetch(`/api/leads/${leadId}`);
+        const data = await res.json();
+        const l = data.lead;
+        const logs = data.logs || [];
+
+        document.getElementById('modal-lead-id').value = l.id;
+        document.getElementById('modal-lead-name').textContent = l.name;
+        document.getElementById('modal-lead-phone').textContent = l.phone || 'N/A';
+        document.getElementById('modal-lead-service').textContent = l.service_needed;
+        document.getElementById('modal-lead-pitch').textContent = l.pitch_hook || 'Custom software pitch';
+        document.getElementById('fb-status').value = l.call_status !== 'New Lead' ? l.call_status : 'Interested';
+        document.getElementById('fb-notes').value = l.caller_notes || '';
+        document.getElementById('fb-caller-name').value = l.caller_name || 'Caller 1';
+        document.getElementById('fb-follow-up').value = l.next_follow_up || '';
+
+        // Render previous logs
+        const logsList = document.getElementById('modal-logs-list');
+        if (logs.length) {
+          logsList.innerHTML = logs.map(lg => `
+            <div class="p-2 bg-slate-50 border border-slate-200 rounded text-slate-700">
+              <div class="flex justify-between font-semibold text-[11px]">
+                <span>${lg.caller_name || 'Agent'} - <span class="text-brand-700">${lg.call_status}</span></span>
+                <span class="text-slate-400">${new Date(lg.created_at).toLocaleDateString()}</span>
+              </div>
+              <p class="mt-0.5 text-slate-600">${lg.notes || ''}</p>
+            </div>
+          `).join('');
+        } else {
+          logsList.innerHTML = '<p class="text-slate-400 italic">No previous calls logged yet.</p>';
+        }
+
+        document.getElementById('modal-feedback').classList.remove('hidden');
+      } catch (err) {
+        alert('Failed to load lead details: ' + err.message);
+      }
+    }
+
+    function closeFeedbackModal() {
+      document.getElementById('modal-feedback').classList.add('hidden');
+    }
+
+    async function submitCallFeedback(e) {
+      e.preventDefault();
+      const leadId = document.getElementById('modal-lead-id').value;
+      const caller_name = document.getElementById('fb-caller-name').value.trim();
+      const call_status = document.getElementById('fb-status').value;
+      const notes = document.getElementById('fb-notes').value.trim();
+      const follow_up_date = document.getElementById('fb-follow-up').value;
+
+      try {
+        const resp = await fetch(`/api/leads/${leadId}/call`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ caller_name, call_status, notes, follow_up_date })
+        });
+
+        if (resp.ok) {
+          closeFeedbackModal();
+          await loadStats();
+          await loadLeads();
+        } else {
+          alert('Failed to save feedback');
+        }
+      } catch (err) {
+        alert('Network error: ' + err.message);
+      }
+    }
+
+    // Manual Lead Modal
+    function openManualLeadModal() {
+      document.getElementById('modal-manual').classList.remove('hidden');
+    }
+
+    function closeManualLeadModal() {
+      document.getElementById('modal-manual').classList.add('hidden');
+    }
+
+    async function submitManualLead(e) {
+      e.preventDefault();
+      const payload = {
+        name: document.getElementById('manual-name').value.trim(),
+        phone: document.getElementById('manual-phone').value.trim(),
+        service_needed: document.getElementById('manual-service').value,
+        city: document.getElementById('manual-city').value.trim(),
+        state: document.getElementById('manual-state').value.trim(),
+        country: document.getElementById('manual-country').value.trim(),
+        website: document.getElementById('manual-website').value.trim() || null,
+        pitch_hook: document.getElementById('manual-pitch').value.trim() || 'Manual lead for software services.'
+      };
+
+      try {
+        const res = await fetch('/api/leads/manual', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          closeManualLeadModal();
+          await loadStats();
+          await loadLeads();
+          switchTab('crm');
+        } else {
+          alert('Failed to add lead');
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+    }
+
+    // Stats & Analytics
+    async function loadStats() {
+      try {
+        const res = await fetch('/api/stats');
+        const s = await res.json();
+
+        document.getElementById('stat-total').textContent = s.total_leads;
+        document.getElementById('stat-new').textContent = s.new_leads;
+        document.getElementById('stat-interested').textContent = s.interested;
+        document.getElementById('stat-followup').textContent = s.followups;
+        document.getElementById('stat-converted').textContent = s.converted;
+        document.getElementById('stat-noweb').textContent = s.no_website_leads;
+
+        // Render analytics view
+        renderAnalytics(s);
+      } catch (err) {
+        console.error('Failed to load stats', err);
+      }
+    }
+
+    function renderAnalytics(s) {
+      const srvList = document.getElementById('analytics-services-list');
+      const total = s.total_leads || 1;
+      
+      const srvs = [
+        { label: 'Website Development', count: s.by_service?.['Website Development'] || 0, color: 'bg-indigo-600' },
+        { label: 'ERP Software', count: s.by_service?.['ERP Software'] || 0, color: 'bg-emerald-600' },
+        { label: 'Custom Software', count: s.by_service?.['Custom Software'] || 0, color: 'bg-amber-600' },
+      ];
+
+      srvList.innerHTML = srvs.map(item => `
+        <div>
+          <div class="flex justify-between text-xs font-semibold text-slate-700 mb-1">
+            <span>${item.label}</span>
+            <span>${item.count} leads (${Math.round((item.count / total) * 100)}%)</span>
+          </div>
+          <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+            <div class="${item.color} h-2.5 rounded-full" style="width: ${(item.count / total) * 100}%"></div>
+          </div>
+        </div>
+      `).join('');
+
+      const funnelList = document.getElementById('analytics-funnel-list');
+      const funnel = [
+        { label: 'Total Sourced', count: s.total_leads, color: 'bg-slate-700' },
+        { label: 'New / Ready to Call', count: s.new_leads, color: 'bg-blue-600' },
+        { label: 'Follow-ups in Progress', count: s.followups, color: 'bg-amber-500' },
+        { label: 'Hot / Interested', count: s.interested, color: 'bg-emerald-600' },
+        { label: 'Converted / Closed Deals', count: s.converted, color: 'bg-purple-600' },
+      ];
+
+      funnelList.innerHTML = funnel.map(item => `
+        <div>
+          <div class="flex justify-between text-xs font-semibold text-slate-700 mb-1">
+            <span>${item.label}</span>
+            <span class="font-bold">${item.count}</span>
+          </div>
+          <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+            <div class="${item.color} h-2.5 rounded-full" style="width: ${(item.count / total) * 100}%"></div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateCityFilterList() {
+      const cityFilter = document.getElementById('crm-filter-city');
+      const currentSelected = cityFilter.value;
+      const uniqueCities = Array.from(new Set(currentLeads.map(l => l.city))).filter(Boolean);
+      
+      cityFilter.innerHTML = '<option value="All Cities">All Cities</option>';
+      uniqueCities.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.textContent = c;
+        if (c === currentSelected) opt.selected = true;
+        cityFilter.appendChild(opt);
+      });
+    }
+
+    function exportCSV() {
+      const service = document.getElementById('crm-filter-service').value;
+      const status = document.getElementById('crm-filter-status').value;
+      const city = document.getElementById('crm-filter-city').value;
+
+      let url = `/api/export?`;
+      if (service && service !== 'All Services') url += `service=${encodeURIComponent(service)}&`;
+      if (status && status !== 'All Statuses') url += `status=${encodeURIComponent(status)}&`;
+      if (city && city !== 'All Cities') url += `city=${encodeURIComponent(city)}&`;
+
+      window.open(url, '_blank');
+    }
+
+    // Switch Tabs
+    function switchTab(tabId) {
+      document.getElementById('tab-generator').classList.add('hidden');
+      document.getElementById('tab-crm').classList.add('hidden');
+      document.getElementById('tab-analytics').classList.add('hidden');
+
+      document.getElementById('tab-btn-generator').className = "px-3.5 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center space-x-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100";
+      document.getElementById('tab-btn-crm').className = "px-3.5 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center space-x-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100";
+      document.getElementById('tab-btn-analytics').className = "px-3.5 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center space-x-1.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100";
+
+      document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+      document.getElementById(`tab-btn-${tabId}`).className = "px-3.5 py-2 text-sm font-semibold rounded-lg transition-colors flex items-center space-x-1.5 bg-brand-50 text-brand-700";
+
+      if (tabId === 'crm') {
+        loadLeads();
+      } else if (tabId === 'analytics') {
+        loadStats();
+      }
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>
